@@ -5,6 +5,12 @@
 
 This repository contains all code relating to the capstone project course (BINF 7700) for the Master of Bioinformatics program at Northeastern University Toronto. 
 
+## Dependencies
+
+```
+conda env create -f environment.yml
+```
+
 ## Technical Skills Invetory
 
 ### Programming Languages
