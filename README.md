@@ -7,9 +7,26 @@ This repository contains all code relating to the capstone project course (BINF 
 
 ## Dependencies
 
+All environment dependencies for this analysis can be found in the environment.yml file in the repository. Installation of the dependencies requires conda. Run the below command to create the conda environment.
+
 ```
 conda env create -f environment.yml
 ```
+
+## Reference Files
+
+The location and dat of download of all the reference files used in this analysis can be found below:
+
+Consensus CDS (CCDS) file: 
+* Downloaded on 2025/10/22 from https://ftp.ncbi.nih.gov/pub/CCDS/current_human/
+* CCDS.current.txt file was downloaded
+* Date of last modification of file on download date was 2025/09/28 at 13:12
+
+Synonymous Constraint Element file:
+* Downloaded on 2025/10/16 from https://genome.ucsc.edu/cgi-bin/hgTables?db=hg38&hgta_group=hub_377623&hgta_track=hub_377623_SCE&hgta_table=hub_377623_SCE&hgta_doSchema=describe+table+schema
+
+Synonymous Acceleration Element file:
+* Downloaded on 2025/10/16 from https://genome.ucsc.edu/cgi-bin/hgTables?db=hg38&hgta_group=hub_377623&hgta_track=hub_377623_SAE&hgta_table=hub_377623_SAE&hgta_doSchema=describe+table+schema
 
 ## Technical Skills Invetory
 

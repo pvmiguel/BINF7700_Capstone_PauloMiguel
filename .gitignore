@@ -1,0 +1,8 @@
+# Data
+input_data/
+ref_data/modified/
+ref_data/raw/
+
+# Mac Metadata
+.DS_store
+*/.DS_store
