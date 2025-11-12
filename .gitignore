@@ -2,7 +2,11 @@
 input_data/
 ref_data/modified/
 ref_data/raw/
+tcga_maf_files/
 
 # Mac Metadata
 .DS_store
 */.DS_store
+
+# Logs
+logs/
