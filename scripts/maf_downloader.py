@@ -43,7 +43,7 @@ def get_cli_args():
     return parser.parse_args()
 
 
-class TCGAMAFDownloader:
+class MAFDownloader:
     """Download open access MAF files using the GDC API."""
     
     def __init__(self, output_dir, n_MAFs, logger):
@@ -152,7 +152,7 @@ class TCGAMAFDownloader:
             self.logger.info(f"  Decompressing {file_name}...")
             gunzip(f"{cwd}/{output_path}")
             self.logger.info(f"  ✓ Decompressed {file_name}")
-            
+
             # Record metadata
             self._add_metadata(file_info, relative_path, "success")
 
@@ -326,7 +326,7 @@ def main():
     logger = logging.getLogger(__name__) 
 
     # Create downloader instance
-    downloader = TCGAMAFDownloader(output_dir="tcga_maf_files", n_MAFs=n, logger=logger)
+    downloader = MAFDownloader(output_dir="maf_files", n_MAFs=n, logger=logger)
     
     # First, print summary of available files
     downloader.print_summary()
