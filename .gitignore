@@ -3,6 +3,7 @@ input_data/
 ref_data/modified/
 ref_data/raw/
 maf_files/
+results/
 
 # Mac Metadata
 .DS_store
