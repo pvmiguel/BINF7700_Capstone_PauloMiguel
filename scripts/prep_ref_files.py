@@ -277,70 +277,55 @@ def _split_chrom(CCDS_df, SAE_SCE_df):
     keep_df = pd.DataFrame({"chrom": [], 'start': [], 'end': [], 'gene': [], 'type': []})
     del_df = pd.DataFrame({"chrom": [], 'start': [], 'end': [], 'gene': [], 'type': []})
 
-    # Initialize indices for iteration
-    CCDS_index = 0
+    # Initialize index for iteration
     SAE_SCE_index = 0
 
-    # Calculate the length of the input DataFrames
-    CCDS_len = len(CCDS_df)
+    # Calculate the length of the SAE/SCE DataFrame
     SAE_SCE_len = len(SAE_SCE_df)
 
-    
-    while CCDS_index <= CCDS_len - 1:
+    for index, row in CCDS_df.iterrows():
 
-        CCDS_row = CCDS_df.iloc[CCDS_index]
-        SAE_SCE_row = SAE_SCE_df.iloc[SAE_SCE_index]
-
-        CCDS_start = CCDS_row['cds_start']
-
-        # Create boolean to check if the program entered the next while loop
-        while_check = True
+        CCDS_start = row['cds_start']
 
         # Iterate if the SAE or SCE region starts before the CCDS region end and ensure that the 
         # index is not out of bounds
-        while SAE_SCE_row['chromStart'] <= CCDS_row['cds_end'] and SAE_SCE_index < SAE_SCE_len -1:
-
-            # Update while_check bool since program entered the while loop
-            while_check = False
+        while SAE_SCE_index < SAE_SCE_len and SAE_SCE_df.iloc[SAE_SCE_index]['chromStart'] <= row['cds_end']:
 
             # If the CCDS region starts after the current SAE SCE region, save the SAE SCE information
             # to the deleted DataFrame and reset the CCDS_start variable
-            if CCDS_start > SAE_SCE_row['chromStart']:
-                del_df.loc[len(del_df)] = [CCDS_row['chrom'], SAE_SCE_row['chromStart'], CCDS_start-1, CCDS_row['gene'], SAE_SCE_row['type']]
-                CCDS_start = SAE_SCE_row['chromStart']
+            if CCDS_start > SAE_SCE_df.iloc[SAE_SCE_index]['chromStart']:
+                del_df.loc[len(del_df)] = [row['chrom'], SAE_SCE_df.iloc[SAE_SCE_index]['chromStart'], CCDS_start-1, row['gene'], SAE_SCE_df.iloc[SAE_SCE_index]['type']]
+                CCDS_start = SAE_SCE_df.iloc[SAE_SCE_index]['chromStart']
 
             # Otherwise, if the CCDS region start is not equal to the SAE SCE region start, add a line to the keep
             # DataFrame with normal type     
-            elif CCDS_start != SAE_SCE_row['chromStart']:
-                keep_df.loc[len(keep_df)] = [CCDS_row['chrom'], CCDS_start, SAE_SCE_row['chromStart']-1, CCDS_row['gene'], 'normal']
+            elif CCDS_start != SAE_SCE_df.iloc[SAE_SCE_index]['chromStart']:
+                keep_df.loc[len(keep_df)] = [row['chrom'], CCDS_start, SAE_SCE_df.iloc[SAE_SCE_index]['chromStart']-1, row['gene'], 'normal']
             
             # If the SAE SCE region ends before th CCDS region end, add a line to the keep DataFrame
             # and update the CCDS_start to the position after the end of the region that was just added
-            if SAE_SCE_row['chromEnd'] <= CCDS_row['cds_end']:
-                keep_df.loc[len(keep_df)] = [CCDS_row['chrom'], SAE_SCE_row['chromStart'], SAE_SCE_row['chromEnd'], CCDS_row['gene'], SAE_SCE_row['type']]
-                CCDS_start = SAE_SCE_row['chromEnd'] + 1
+            if SAE_SCE_df.iloc[SAE_SCE_index]['chromEnd'] <= row['cds_end']:
+                keep_df.loc[len(keep_df)] = [row['chrom'], SAE_SCE_df.iloc[SAE_SCE_index]['chromStart'], SAE_SCE_df.iloc[SAE_SCE_index]['chromEnd'], row['gene'], SAE_SCE_df.iloc[SAE_SCE_index]['type']]
+                CCDS_start = SAE_SCE_df.iloc[SAE_SCE_index]['chromEnd'] + 1
             
             # Otherwise, add a line to the keep DataFrame for the region until the CCDS end and add 
             # a line to the delete DataFrame with the rest of the interval
             else: 
-                keep_df.loc[len(keep_df)] = [CCDS_row['chrom'], SAE_SCE_row['chromStart'], CCDS_row['cds_end'], CCDS_row['gene'], SAE_SCE_row['type']]
-                del_df.loc[len(del_df)] = [CCDS_row['chrom'], CCDS_row['cds_end']+1, SAE_SCE_row['chromEnd'], CCDS_row['gene'], SAE_SCE_row['type']]
+                keep_df.loc[len(keep_df)] = [row['chrom'], SAE_SCE_df.iloc[SAE_SCE_index]['chromStart'], row['cds_end'], row['gene'], SAE_SCE_df.iloc[SAE_SCE_index]['type']]
+                del_df.loc[len(del_df)] = [row['chrom'], row['cds_end']+1, SAE_SCE_df.iloc[SAE_SCE_index]['chromEnd'], row['gene'], SAE_SCE_df.iloc[SAE_SCE_index]['type']]
 
             # If the index is 1 from the end, add a normal region making up the rest of the CCDS interval
             if SAE_SCE_index == SAE_SCE_len - 2:
-                keep_df.loc[len(keep_df)] = [CCDS_row['chrom'], SAE_SCE_row['chromEnd']+1, CCDS_row['cds_end'], CCDS_row['gene'], 'normal']
+                keep_df.loc[len(keep_df)] = [row['chrom'], SAE_SCE_df.iloc[SAE_SCE_index]['chromEnd']+1, row['cds_end'], row['gene'], 'normal']
 
             # Iterate the SAE SCE index and pull the relevant DataFrame row
             SAE_SCE_index += 1
-            SAE_SCE_row = SAE_SCE_df.iloc[SAE_SCE_index]
+            
 
         # If the algorithm did not enter the previous while loop, add the entire CCDS intveral as a 
         # normal region to the keep DataFrame
-        if while_check:
-            keep_df.loc[len(keep_df)] = [CCDS_row['chrom'], CCDS_row['cds_start'], CCDS_row['cds_end'], CCDS_row['gene'], 'normal']
-
-        # Iterate the CCDS index
-        CCDS_index += 1
+        if CCDS_start <= row['cds_end']:
+            keep_df.loc[len(keep_df)] = [row['chrom'], CCDS_start, row['cds_end'], row['gene'], 'normal']
             
     return keep_df, del_df
 
@@ -369,6 +354,8 @@ def SAE_SCE_merge(SAE_df, SCE_df):
     SCE_df = merge_overlapping(SCE_df, 'chrom', 'chromStart', 'chromEnd')
 
     df = pd.concat([SAE_df, SCE_df])
+
+    df = df.sort_values(by=['chrom', 'chromStart', 'chromEnd'], ascending=[True, True, True]).reset_index(drop=True)
 
     return df
 
