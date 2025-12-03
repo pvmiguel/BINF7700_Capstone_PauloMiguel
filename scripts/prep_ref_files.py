@@ -100,7 +100,7 @@ def CCDS_prep(path):
     df = pd.read_csv("ref_data/raw/CCDS.current.txt", sep="\t")
 
     # Filter out CCDS data that has been withdrawn or is not complete 
-    df = df[df['ccds_status'] == 'Public']
+    df = df.loc[df['ccds_status'].isin(['Public', 'Under review, update', 'Under review, withdrawal'])]
     df = df[df['match_type'] != 'Partial']
 
     # Prepare locations column for explosion
