@@ -13,13 +13,13 @@ def add_mutation_counts(intervals_df, mutations_df):
 
     for index, row in intervals_df.iterrows():
 
-        while mutations_index < mutations_len and mutations_df.iloc[mutations_index]['Start_Position'] < row['start']:
+        while mutations_index < mutations_len and mutations_df.iloc[mutations_index]['Start_Position']-1 < row['start']:
             mutations_row = mutations_df.iloc[mutations_index]
-            not_matched_df.loc[len(not_matched_df)] = [mutations_row['Chromosome'], mutations_row['Start_Position'], mutations_row['Hugo_Symbol'], mutations_row['Variant_Classification']]
+            not_matched_df.loc[len(not_matched_df)] = [mutations_row['Chromosome'], mutations_row['Start_Position']-1, mutations_row['Hugo_Symbol'], mutations_row['Variant_Classification']]
             mutations_index += 1
 
         while mutations_index < mutations_len and \
-            mutations_df.iloc[mutations_index]['Start_Position'] in range(int(row['start']), int(row['end'])+1):
+            mutations_df.iloc[mutations_index]['Start_Position']-1 in range(int(row['start']), int(row['end'])+1):
 
             if mutations_index % 10000 == 0:
                 print(mutations_index)
