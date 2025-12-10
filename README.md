@@ -3,19 +3,39 @@
 
 ## Purpose
 
-This repository contains all code relating to the capstone project course (BINF 7700) for the Master of Bioinformatics program at Northeastern University Toronto. 
+This repository contains an analysis of cancer mutations with respect to synonymous contraint elements (SCEs) and sysnonymous acceleration elements (SAEs). It contains all the code that was used to transform raw CCDS, SAE and SCE data into genomic intervals and the counting of mutations from the GDC Data Portal into those regions. A statistical analysis and other data exploration is conducted in a series of Jupyter notebooks. 
 
 ## Dependencies
 
-All environment dependencies for this analysis can be found in the environment.yml file in the repository. Installation of the dependencies requires conda. Run the below command to create the conda environment.
+All environment dependencies for this analysis can be found in the environment.yml file in the repository. The dependencies are as follows:
+
+* python=3.12.1
+* numpy=2.3.5
+* pandas=2.3.3
+* genomekit=7.2.2
+* sh=2.2.2
+* jupyter=1.1.1
+* matplotlib=3.10.8
+* seaborn=0.13.2
+* scipy=1.16.3
+* statsmodels=0.14.5
+* gseapy=1.1.11
+* adjusttext=1.3.0
+* dna_features_viewer
+
+Installation of the dependencies using the environment.yml file requires conda. Run the below command to create the conda environment.
 
 ```
 conda env create -f environment.yml
 ```
 
-## Reference Files
+## Data
 
-The location and dat of download of all the reference files used in this analysis can be found below:
+### Availability of Raw Reference Files
+
+NOTE: The raw files used in this analysis have been provided in this directory. They can be found zipped in `ref_data/raw.zip`.
+
+The location and date of download of all the reference files used in this analysis can be found below:
 
 Consensus CDS (CCDS) file: 
 * Downloaded on 2025/10/22 from https://ftp.ncbi.nih.gov/pub/CCDS/current_human/
@@ -28,41 +48,70 @@ Synonymous Constraint Element file:
 Synonymous Acceleration Element file:
 * Downloaded on 2025/10/16 from https://genome.ucsc.edu/cgi-bin/hgTables?db=hg38&hgta_group=hub_377623&hgta_track=hub_377623_SAE&hgta_table=hub_377623_SAE&hgta_doSchema=describe+table+schema
 
-## Technical Skills Invetory
+### Modification of Raw Reference Files
 
-### Programming Languages
+NOTE: The modified files used in this analysis have been provided in this directory. They can be found zipped in `ref_data/modified.zip`.
 
-- Python
-- SAS
-- Mathematica
-- Matlab
-- Java
-- C
-- SQL
+The modified files used in this analysis were generated using the `prep_ref_files.py` script which can be found in the `scripts/` folder of this repository. To run the scipt, go to root file of the repository and run `prep_ref_files.py`.
 
-### Python Libraries
+```
+python scripts/prep_ref_files.py
+```
 
-- Pandas
-- Numpy
-- PyTorch
-- Keras
-- SciKitLearn
-- matplotlib
-- Seaborn
+### Downloading Mutation Data
 
-### Bioinformatics
+The mutation data used in this analysis were sourced from the National Cancer Institute GDC Data Portal (https://portal.gdc.cancer.gov/). To download the files locally, the `maf_downloader.py` script was created. It can be ran using the following command.
 
-- Pipeline management (Nextflow, Snakemake)
-- Containers (Apptainer/Singularity, Docker)
-- Quality Control (FastQC, MultiQC)
-- Trimming (Trimmomatic, FastP, CutAdapt)
-- Alignment (STAR, BWA-MEM, Bowtie)
-- Pseudoalignment/quantification (Salmon)
-- SAM/BAM/CRAM Processing (SAMtools)
-- Genome Arithmetic (BEDtools) 
-- Variant Calling (LoFreq)
-- Differential Gene Expression Analysis (DESeq2, edgeR)
+```
+python scripts/count_mutations.py -n [number of files] -l [logfile name]
+```
 
-## Learning Goals
+NOTE: This script has not yet been modified to recognize which files have already been downloaded to the repository and download other undownloaded files. To get all open access WXS MAF files on the GDC Data Portal, use -n 20000. Ideally, use screen or sbatch, since the download will take 8+ hours.
 
-I hope to continue buidling out my bioinformatics skillset, applying everything I have learned over the last few semesters into a real-world project. Specifically, I am interested in using math/programming to understand the body better, so I am hoping to be assigned to a project where I get to explore the modelling of a biological process, allowing for better understanding of how to leverage that process for good.
+### Mutation Validation
+
+All mutation data downloaded used in this analysis was verified, by checking if the reference allele in the files matched HG38, and filtered, keeping only the silent (synonymous) and missense (non-synonymous) single nucleotide polymorphisms (SNP). Following the above step of downloading the mutation files, this step can be completed using the `validate_mutations.py` script. It can be ran using the following command.
+
+```
+python scripts/validate_mutations.py
+```
+
+### Mutation Counting
+
+The validation step returns a CSV file with all validated mutations that can then be counted using the regions created using the `prep_ref_files.py` script. The mutation counting was done using the `count_mutations.py` script and can be ran using the following command.
+
+```
+python scripts/count_mutations.py
+```
+
+## Analysis
+
+The notebooks folder includes several Jupyter notebooks used for various analyses. They are are follows:
+
+### analysis.ipynb
+
+This Jupyter notebook contains exploratory analyses into the count data, hypothesis testing on the mutation distributions in the genes and over-representation analysis (ORA) on the statistically significant genes.
+
+### gene_distributions.ipynb
+
+This Jupyter notebook contains visualizations of the mutation rate over the length of individual genes. It is used to visualize and determine qualitatively which regions of a gene have higher or lower mutation rates.
+
+### not_matched.ipynb
+
+This Jupyter notebook contains an analysis on the mutations that did not match the CCDS regions from the raw files. 
+
+### sample_dist.ipynb
+
+This Jupyter notebook contains the creating of a visualization for the number of mutations found in each of the analyzed samples.
+
+## Acknowledgements
+
+This project was completed as part of the capstone project course (BINF 7700) for the Master of Bioinformatics program at Northeastern University Toronto. 
+
+Special thank you to:
+* Max Wolf (Supervisor)
+* Oyeronke Ayansola (Course Instructor)
+
+## License
+
+See the [LICENSE](LICENSE) file
