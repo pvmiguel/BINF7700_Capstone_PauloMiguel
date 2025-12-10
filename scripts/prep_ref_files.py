@@ -347,28 +347,38 @@ def SAE_SCE_merge(SAE_df, SCE_df):
     SAE_df['type'] = 'SAE'
     SCE_df['type'] = 'SCE'
 
+    # Sort Dataframes by chromosome and genomic position
     SAE_df = SAE_df.sort_values(by=['chrom', 'chromStart', 'chromEnd'], ascending=[True, True, True]).reset_index(drop=True)
     SCE_df = SCE_df.sort_values(by=['chrom', 'chromStart', 'chromEnd'], ascending=[True, True, True]).reset_index(drop=True)
 
+    # Merge the overlapping regions
     SAE_df = merge_overlapping(SAE_df, 'chrom', 'chromStart', 'chromEnd')
     SCE_df = merge_overlapping(SCE_df, 'chrom', 'chromStart', 'chromEnd')
 
+    # Concatenate and resort the produced dataframe by chromosome and genomic location
     df = pd.concat([SAE_df, SCE_df])
-
     df = df.sort_values(by=['chrom', 'chromStart', 'chromEnd'], ascending=[True, True, True]).reset_index(drop=True)
 
     return df
 
 
 def main():
+    """
+    Main Process Flow
+    """
+
+    # Create Pandas Dataframes for the SAE, SCE and CCDS data
     SAE_df = SAE_SCE_prep("ref_data/raw/SAE.csv")
     SCE_df = SAE_SCE_prep("ref_data/raw/SCE.csv")
     CCDS_df = CCDS_prep("ref_data/raw/CCDS.current.txt")
 
+    # Merge the SAE and SCE data
     SAE_SCE_df = SAE_SCE_merge(SAE_df, SCE_df)
 
+    # Create the intervals data with genomic regions split by CCDS, SAE and SCE
     CCDS_split_df, CCDS_del_df = split_CCDS_by_coverage(CCDS_df, SAE_SCE_df)
 
+    # Save the results
     SAE_df.to_csv("ref_data/modified/SAE.csv", index=False)
     SCE_df.to_csv("ref_data/modified/SCE.csv", index=False)
     SAE_SCE_df.to_csv("ref_data/modified/SAE_SCE.csv", index=False)

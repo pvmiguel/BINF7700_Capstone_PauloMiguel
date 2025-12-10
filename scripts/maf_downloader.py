@@ -1,3 +1,12 @@
+"""
+File   : maf_downloader.py
+Created: 15-Nov-2025 by Paulo Miguel
+
+Download MAF files from the GDC Data Portal using the GDC API.
+
+Note this code was developed with the aid of Claude AI.
+"""
+
 import argparse
 import csv
 import json
@@ -6,7 +15,6 @@ import os
 import requests
 import sys
 import time
-
 from datetime import datetime
 from pathlib import Path
 from sh import gunzip
@@ -27,13 +35,14 @@ def get_cli_args():
     # Create parser object
     parser = argparse.ArgumentParser()
 
-    # Add infile argument to parser
+    # Add number argument to parser
     parser.add_argument('-n',
                         '--number',
                         type=int,
                         help='Number of MAF files downloaded',
                         default=100)
     
+    # Add logfile argument to parser
     parser.add_argument('-l',
                         '--logfile',
                         type=str,
@@ -44,7 +53,9 @@ def get_cli_args():
 
 
 class MAFDownloader:
-    """Download open access MAF files using the GDC API."""
+    """
+    Class for downloading open access MAF files using the GDC API.
+    """
     
     def __init__(self, output_dir, n_MAFs, logger):
         self.base_url = "https://api.gdc.cancer.gov"
@@ -309,7 +320,11 @@ class MAFDownloader:
 
 
 def main():
+    """
+    Main Process Flow
+    """
 
+    # Get command line interface arguments
     args = get_cli_args()
     n = args.number
     logfile = args.logfile
@@ -334,6 +349,7 @@ def main():
     # Ask user to confirm download
     response = input(f"Do you want to proceed with downloading all files? (yes/no): ")
     
+    # If yes, download, if no, cancel
     if response.lower() in ['yes', 'y']:
         downloader.download_all_maf_files()
     else:
