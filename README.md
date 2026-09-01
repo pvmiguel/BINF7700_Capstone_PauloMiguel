@@ -169,6 +169,14 @@ All mutation data downloaded used in this analysis was verified, by checking if 
 python scripts/validate_mutations.py
 ```
 
+### Mutation Counting
+
+The validation step returns a CSV file with all validated mutations that can then be counted using the regions created using the `prep_ref_files.py` script. The mutation counting was done using the `count_mutations.py` script and can be ran using the following command.
+
+```
+python scripts/count_mutations.py
+```
+
 ## Analysis
 
 The notebooks folder includes several Jupyter notebooks used for various analyses. They are are follows:
